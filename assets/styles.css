@@ -1,0 +1,79 @@
+/* overall styles */
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	text-align: center;
+	font: 1em Arial, sans-serif;
+}
+
+/* table styles */
+table {
+	width: 90%;
+	margin: 30px auto;
+	border-collapse: collapse;
+}
+th {
+	white-space: nowrap;
+}
+td {
+	padding: 15px;
+	border: 1px solid #ccc;
+	text-align: left;
+	font-size: 0.9em;
+	letter-spacing: 1px;
+	line-height: 1.5em;
+}
+td:last-child {
+	text-align: center;
+}
+
+/* input/form styles */
+label {
+	margin-top: 1em;
+	height: 2em;
+	line-height: 2em;
+	display: inline-block;
+}
+input[type="radio"] {
+	margin: 0 0 0 10px;
+}
+input:not([type="radio"]), button {
+	font: inherit;
+	padding: 0 10px;
+	line-height: 2em;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	height: 2em;
+	margin: 0 5px 0 0;
+}
+button {
+	background: linear-gradient(#fff 10%, #eee 90%);
+	transition: box-shadow 200ms;
+}
+button:hover {
+	box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);
+}
+span.highlight {
+	background-color: #ffff00;
+}
+
+/* responsive design specifics */
+@media(min-width: 980px) {
+	table {
+		width: 60%;
+	}
+}
+
+@media(max-width: 387px) {
+	button#clear-results {
+		margin-top: 1em;
+	}
+}
+
+@media(max-width: 599px) {
+	td:last-child {
+		vertical-align: top;
+	}
+}
