@@ -1,14 +1,13 @@
 <?php
 namespace Ajax;
-include 'ajax-response.php';
+require 'ajax-response.php';
+require '../include/mysql-connect.php';
 
 /**
  * all we're doing here is deleting all records in our comments table
  */
 
 $response = null;
-$con = new \mysqli('localhost','root','','employees');
-
 $result = $con->query('delete from comments');
 
 if ($result) {

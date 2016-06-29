@@ -1,6 +1,7 @@
 <?php
 namespace Ajax;
-include 'ajax-response.php';
+require 'ajax-response.php';
+require '../include/mysql-connect.php';
 
 /**
  * in this script, we want to hit http://hipsum.co 100 times, each time grabbing
@@ -18,8 +19,6 @@ include 'ajax-response.php';
  */
 
 $response = null;
-
-$con = new \mysqli('localhost', 'root', '', 'employees');
 
 for ($i = 0; $i < 100; ++$i) {
 	$html = file_get_contents('http://hipsum.co/?paras=100&type=hipster-centric');

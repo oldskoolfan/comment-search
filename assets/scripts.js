@@ -10,8 +10,10 @@ function handleAjaxError(xhr, status, error) {
 }
 
 function populateCallback(data) {
-	// update count
-	$('#comment-count').html(data.inserted.toLocaleString());
+	if (typeof data === 'object') {
+		// update count
+		$('#comment-count').html(data.inserted.toLocaleString());
+	}
 	// remove loading icon
 	$('#msg').html('');
 }

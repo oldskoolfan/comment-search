@@ -1,15 +1,17 @@
 <?php
 namespace Ajax;
+require '../include/mysql-connect.php';
 
 /**
  * our search script. we should always get two query parameters:
  * text (search text) and type (search type - natural or boolean)
  */
 
+error_reporting(0); // turn off error reporting so we can always send json
+
 $response = [];
 $searchText = urldecode($_GET['text']);
 $searchType = $_GET['type'];
-$con = new \mysqli('localhost','root','','employees');
 
 if ($searchType === 'natural') {
 	// "regular" (i.e. natural language) search query

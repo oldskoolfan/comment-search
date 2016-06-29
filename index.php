@@ -23,7 +23,7 @@
 	<h1>Comment Search</h1>
 	<section id="info">
 		<?php
-			$con = new mysqli('localhost','root','','employees');
+			require 'include/mysql-connect.php';
 			$result = $con->query('select count(*) as count from comments');
 			$count = number_format($result->fetch_object()->count);
 			echo "<p>Number of comments: <span id=\"comment-count\">$count</span></p>";
