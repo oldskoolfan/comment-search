@@ -105,3 +105,10 @@ function clearResults(dontFocus) {
 		$('#search-text').val('').focus();
 	}
 }
+
+function searchKeyPressed(e) {
+	// if enter (keyCode == 13) is pressed, run search
+	if (e.keyCode === 13) {
+		searchComments();
+	}
+}

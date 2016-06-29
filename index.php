@@ -36,7 +36,7 @@
 		</div>
 		<br>
 		<div>
-			<input id="search-text" type="text" />
+			<input id="search-text" type="text" onkeypress="searchKeyPressed(event)"/>
 			<button id="search-button" onclick="searchComments()">Search</button>
 			<button id="clear-results" onclick="clearResults()">Clear Results</button>
 			<div>
