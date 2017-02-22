@@ -2,6 +2,7 @@
 * {
 	box-sizing: border-box;
 }
+
 body {
 	margin: 0;
 	text-align: center;
@@ -14,9 +15,11 @@ table {
 	margin: 30px auto;
 	border-collapse: collapse;
 }
+
 th {
 	white-space: nowrap;
 }
+
 td {
 	padding: 15px;
 	border: 1px solid #ccc;
@@ -25,6 +28,7 @@ td {
 	letter-spacing: 1px;
 	line-height: 1.5em;
 }
+
 td:last-child {
 	text-align: center;
 }
@@ -36,9 +40,11 @@ label {
 	line-height: 2em;
 	display: inline-block;
 }
+
 input[type="radio"] {
 	margin: 0 0 0 10px;
 }
+
 input:not([type="radio"]), button {
 	font: inherit;
 	padding: 0 10px;
@@ -48,15 +54,29 @@ input:not([type="radio"]), button {
 	height: 2em;
 	margin: 0 5px 0 0;
 }
+
 button {
 	background: linear-gradient(#fff 10%, #eee 90%);
 	transition: box-shadow 200ms;
 }
+
 button:hover {
 	box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);
 }
+
 span.highlight {
 	background-color: #ffff00;
+}
+
+/* pagination buttons/label */
+#pagination {
+	margin-bottom: 30px;
+}
+#pagination button {
+	margin: 0;
+}
+#pagination span {
+	margin: 0 10px;
 }
 
 /* responsive design specifics */

@@ -29,39 +29,84 @@ function clearCallback(data) {
 	}
 }
 
-function searchCallback(data) {
-	var html;
-	if (typeof data === 'object' && data.length > 0) {
-		// add some table headers
-		html = '<tr><th>Comment</th><th>Search Score</th></tr>';
-		data.forEach(function(row) {
-			var commentText = row[0],
-				score = row[1];
-			html += '<tr><td>' + commentText + '</td><td>' + score + '</td></tr>';
-		});
-		$('#search-results').html(html);
-		$('#msg').html(''); // hide loading icon
+function searchCallback(response) {
+	var html,
+		data = response.data;
+	if (response.status === 0) {
+		if (typeof data === 'object' && data.length > 0) {
+			// add some table headers
+			html = '<tr><th>Comment</th><th>Search Score</th></tr>';
+			data.forEach(function(row) {
+				var commentText = row[0],
+					score = row[1];
+				html += '<tr><td>' + commentText + '</td><td>' + score + '</td></tr>';
+			});
+			$('#search-results').html(html);
+			$('#msg').html(''); // hide loading icon
+
+			if (typeof response.meta === 'object') {
+				displayPagination(response.meta);
+			}
+		} else {
+			$('#msg').html('<p>No Results</p>');
+		}
 	} else {
-		$('#msg').html('<p>No Results</p>');
+		$('#msg').html('<p>' + data.error + '</p>');
+	}
+}
+
+function displayPagination(meta) {
+	var html = '',
+		prevPage,
+		nextPage;
+
+	// display result meta info
+	$('#search-results').prepend('<h3>Displaying ' +
+		meta.start + ' thru ' + meta.end + ' of ' +
+		meta.total + ' results</h3>');
+
+	// display pagination buttons if we have more than
+	// one page
+	if (meta.pages > 1) {
+		if (meta.currentPage > 1) {
+			prevPage = meta.currentPage - 1;
+			html += '<button onclick="searchComments(' +
+				prevPage + ')">Prev</button>';
+		}
+		nextPage = meta.currentPage + 1;
+		html += '<span>Page ' + meta.currentPage + '</span>' +
+			'<button onclick="searchComments(' +
+				nextPage + ')">Next</button>';
+		$('#pagination').html(html);
 	}
 }
 
 function clearComments() {
+	// make sure we really want to do this...
+	var sure = confirm('Warning: this will clear entire comments table. Are you sure?');
+	if (!sure) {
+		return;
+	}
 	clearResults(true);
-	$.get('ajax/clear-comments.php')
+	$.post('ajax/clear-comments.php')
 		.done(clearCallback).fail(handleAjaxError);
 }
 
 function populateComments() {
+	// make sure we want to
+	var sure = confirm('Are you sure you want to populate more comments?');
+	if (!sure) {
+		return;
+	}
 	clearResults(true);
 	showLoadingIcon('Populating comments table...');
 
-	// disable search while populate job is running
-	$('#search-text, #search-button').attr('disabled', true);
+	// disable buttons/inputs while populate job is running
+	$('button, input').attr('disabled', true);
 
-	$.get('ajax/populate-comments.php')
+	$.post('ajax/populate-comments.php')
 		.done(populateCallback).fail(handleAjaxError).always(function() {
-			$('#search-text, #search-button').removeAttr('disabled');
+			$('button, input').removeAttr('disabled');
 		});
 }
 
@@ -72,11 +117,15 @@ function showLoadingIcon(msg) {
 	$('#msg').html(html);
 }
 
-function searchComments() {
+function searchComments(page) {
 	var $searchTextbox,
 		text,
-		data,
+		data = { },
 		searchType;
+
+	if (page) {
+		data.page = page;
+	}
 
 	// get search text
 	$searchTextbox = $('#search-text');
@@ -88,7 +137,8 @@ function searchComments() {
 
 	if (typeof text === 'string' && text.length > 0) {
 		text = encodeURIComponent(text);
-		data = { text: text, type: searchType };
+		data.text = text
+		data.type = searchType;
 
 		// new search...let's clear any previous results, show loading icon
 		clearResults(true);
@@ -100,7 +150,7 @@ function searchComments() {
 }
 
 function clearResults(dontFocus) {
-	$('#search-results, #msg').html('');
+	$('#search-results, #msg, #pagination').html('');
 	if (!dontFocus) {
 		$('#search-text').val('').focus();
 	}

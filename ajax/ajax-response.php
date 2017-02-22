@@ -7,8 +7,6 @@ namespace Ajax;
  * inserted/updated/deleted
  */
 
-error_reporting(0); // turn off error reporting so we can always send json
-
 abstract class ResponseStatus {
 	const Ok = 0;
 	const Error = 1;
@@ -19,13 +17,16 @@ class AjaxResponse {
 	public $updated;
 	public $deleted;
 	public $status;
+	public $data;
 	public $error;
+	public $meta = [];
 
-	public function __construct($i = 0, $u = 0, $d = 0, $s = ResponseStatus::Ok, $e = null) {
+	public function __construct($i = 0, $u = 0, $d = 0, $s = ResponseStatus::Ok, $data = null, $e = null) {
 		$this->inserted = $i;
 		$this->updated = $u;
 		$this->deleted = $d;
 		$this->status = $s;
+		$this->data = $data;
 		$this->error = $e;
 	}
 	public function send() {

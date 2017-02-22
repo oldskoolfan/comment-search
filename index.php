@@ -16,6 +16,11 @@
 
 	<!-- jquery for its magical DOM manipulation powers -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+	<!-- jquery pagination plugin (http://flaviusmatis.github.io/simplePagination.js/) -->
+	<link type="text/css" rel="stylesheet" href="assets/simplePagination.css"/>
+	<script type="text/javascript" src="assets/jquery.simplePagination.js"></script>
+
 	<script src="assets/scripts.js"></script>
 	<!-- END assets -->
 </head>
@@ -51,5 +56,6 @@
 	</section>
 	<table id="search-results">
 	</table>
+	<div id="pagination"></div>
 </body>
 </html>
