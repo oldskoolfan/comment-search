@@ -1,0 +1,12 @@
+{
+    "name": "andrew/comments",
+    "description": "comment search using mysql fulltext index",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Andrew Harris",
+            "email": "harris.1305@gmail.com"
+        }
+    ],
+    "require": {}
+}
