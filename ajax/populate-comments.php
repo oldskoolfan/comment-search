@@ -4,36 +4,34 @@ require 'ajax-response.php';
 require '../include/mysql-connect.php';
 
 /**
- * in this script, we want to hit http://hipsum.co 100 times, each time grabbing
- * 100 paragraphs of hipster ipsum text.
+ * In this script, we want to hit http://www.randomtext.me 100 times, each time grabbing
+ * 15 paragraphs of gibberish text.
  *
- * because it comes back as an html document, we want to use regex to only grab
- * the content we want.
+ * Because it comes back with <p> tags, we want to use regex to only grab
+ * the content we want (actual text).
  *
- * first we grab the <div class="hipsum"> section, then grab each paragraph
- * (<p>) and extract the actual text from it.
+ * This way, we won't have html markup in our comment_text column in the database.
  *
- * this way, we won't have html markup in our comment_text column in the database.
- *
- * see http://php.net/manual/en/ref.pcre.php for references to these functions.
+ * See http://php.net/manual/en/ref.pcre.php for references to regex functions.
  */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	try {
 		for ($i = 0; $i < 100; ++$i) {
-			$json = file_get_contents('http://hipsterjesus.com/api/?paras=99&type=hipster-centric');
+			$json = file_get_contents('http://www.randomtext.me/api/gibberish/p-15/100-150');
 			$data = json_decode($json);
-			$text = $data->text ?? '';
+			$text = $data->text_out ?? '';
 			if (!empty($text)) {
 				preg_match_all('/(?:<p>)(.*?)(?:<\/p>)/', $text, $pMatches);
 				if ($pMatches && count($pMatches) > 0) {
 					$pTags = $pMatches[1]; // second array contains matched groups
 					for ($j = 0, $count = count($pTags); $j < $count; ++$j) {
-						$pText = $con->real_escape_string($pTags[$j]);
-						$result = $con->query("INSERT INTO comments(comment_text)
-							VALUES ('$pText')");
-						if (!$result) {
-							echo 'Error: ' . $con->error;
+						// $pText = $pTags[$j];
+						$stmt = $con->prepare("INSERT INTO comments(comment_text)
+							VALUES (?)");
+						$stmt->bind_param('s', $pTags[$j]);
+						if (!$stmt->execute()) {
+							throw new \Exception($stmt->error);
 						}
 					}
 				}
