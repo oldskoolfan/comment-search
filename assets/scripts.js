@@ -140,7 +140,7 @@ function searchComments(page) {
 		data.text = text
 		data.type = searchType;
 
-		// append search text to URL
+		// append search params to URL
 		var newUrl = location.href.substr(0, location.href.indexOf('?'))
 			+ '?text=' + text + '&type=' + searchType;
 
@@ -167,7 +167,7 @@ function clearResults(dontFocus) {
 		$('#search-text').val('').focus();
 		$('input[name=search-type][value=natural]').prop('checked', true);
 
-		// append search text to URL
+		// remove query params from URL
 		var newUrl = location.href.substr(0, location.href.indexOf('?'));
 		history.pushState(null, null, newUrl);
 	}
