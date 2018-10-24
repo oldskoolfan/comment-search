@@ -1,3 +1,13 @@
+<?php
+require 'include/get-config.php';
+require 'include/AjaxResponse.php';
+require 'include/SearchHelper.php';
+
+if (isset($_GET['text']) && isset($_GET['type'])) {
+	$response = SearchHelper::searchComments($con);
+}
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -8,11 +18,72 @@
 
 	<title>Comment Search Example</title>
 
-	<!-- all our css and js assets -->
+	<!-- our css file -->
 	<link href="assets/styles.css" rel="stylesheet" type="text/css">
 
 	<!-- fontawesome for the rotating cog loading icon -->
 	<script src="https://use.fontawesome.com/11acce7723.js"></script>
+</head>
+<body>
+	<h1>Comment Search</h1>
+	<section id="info">
+		<p>Number of comments: <span id="comment-count"><?=SearchHelper::getCommentCount($con)?></span></p>
+	</section>
+	<section id="controls">
+		<div>
+			<button id="populate-button" onclick="populateComments()">Populate Table</button>
+			<button id="clear-button" onclick="clearComments()">Clear Table</button>
+		</div>
+		<br>
+		<div>
+			<input id="search-text" type="text" onkeypress="searchKeyPressed(event)"
+				value="<?=isset($_GET['text']) ? urldecode($_GET['text']) : ''?>"/>
+			<button id="search-button" onclick="searchComments()">Search</button>
+			<button id="clear-results" onclick="clearResults()">Clear Results</button>
+			<div>
+				<span>Search Type:</span>
+				<input id="natural" type="radio" name="search-type" value="natural" 
+					<?=isset($_GET['type']) && $_GET['type'] === 'boolean' ? '' : 'checked'?> />
+				<label for="natural">Natural</label>
+				<input id="boolean" type="radio" name="search-type" value="boolean" 
+					<?=isset($_GET['type']) && $_GET['type'] === 'boolean' ? 'checked' : ''?> />
+				<label for="boolean">Boolean</label>
+			</div>
+		</div>
+	</section>
+	<section id="msg">
+	</section>
+
+	<?php if (isset($response)): ?>				
+	<h3 id="meta">Displaying <?=$response->meta['start']?> thru <?=$response->meta['end']?>
+		of <?=$response->meta['total']?> results</h3>
+	<?php endif; ?>
+	
+	<table id="search-results">
+	<?php if (isset($response)): ?>
+		<?php if (count($response->data) > 0):?>
+			<tr><th>Comment</th><th>Search Score</th></tr>
+			<?php foreach ($response->data as $row): ?>
+				<tr><td><?=$row[0]?></td><td><?=$row[1]?></td></tr>
+			<?php endforeach; ?>
+		<?php else: ?>
+			<p>No Results</p>
+		<?php endif; ?>
+	<?php endif; ?>
+	</table>
+	<div id="pagination">
+	<?php if (isset($response)):?>
+		<?php if ($response->meta['pages'] > 1):?>	
+			<?php if ($response->meta['currentPage'] > 1):?>
+				<button onclick="searchComments(<?=$response->meta['currentPage'] - 1?>)">Prev</button>
+			<?php endif;?>
+			<span>Page <?=$response->meta['currentPage']?></span>
+			<button onclick="searchComments(<?=$response->meta['currentPage'] + 1?>)">Next</button>
+		<?php endif;?>
+	<?php endif;?>
+	</div>
+	
+	<!-- BEGIN JS assets -->
 
 	<!-- jquery for its magical DOM manipulation powers -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -23,39 +94,5 @@
 
 	<script src="assets/scripts.js"></script>
 	<!-- END assets -->
-</head>
-<body>
-	<h1>Comment Search</h1>
-	<section id="info">
-		<?php
-			require 'include/mysql-connect.php';
-			$result = $con->query('select count(*) as count from comments');
-			$count = number_format($result->fetch_object()->count);
-			echo "<p>Number of comments: <span id=\"comment-count\">$count</span></p>";
-		?>
-	</section>
-	<section id="controls">
-		<div>
-			<button id="populate-button" onclick="populateComments()">Populate Table</button>
-			<button id="clear-button" onclick="clearComments()">Clear Table</button>
-		</div>
-		<br>
-		<div>
-			<input id="search-text" type="text" onkeypress="searchKeyPressed(event)"/>
-			<button id="search-button" onclick="searchComments()">Search</button>
-			<button id="clear-results" onclick="clearResults()">Clear Results</button>
-			<div>
-				<label for="search-type">Search Type:
-					<input type="radio" name="search-type" value="natural" checked="checked" /> Natural
-					<input type="radio" name="search-type" value="boolean"/> Boolean
-				</label>
-			</div>
-		</div>
-	</section>
-	<section id="msg">
-	</section>
-	<table id="search-results">
-	</table>
-	<div id="pagination"></div>
 </body>
 </html>
