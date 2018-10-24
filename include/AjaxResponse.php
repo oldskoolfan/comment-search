@@ -1,5 +1,4 @@
 <?php
-namespace Ajax;
 
 /**
  * just some simple classes declared so we can return a standard response
@@ -7,12 +6,14 @@ namespace Ajax;
  * inserted/updated/deleted
  */
 
-abstract class ResponseStatus {
+abstract class ResponseStatus 
+{
 	const Ok = 0;
 	const Error = 1;
 }
 
-class AjaxResponse {
+class AjaxResponse 
+{
 	public $inserted;
 	public $updated;
 	public $deleted;
@@ -21,7 +22,8 @@ class AjaxResponse {
 	public $error;
 	public $meta = [];
 
-	public function __construct($i = 0, $u = 0, $d = 0, $s = ResponseStatus::Ok, $data = null, $e = null) {
+	public function __construct($i = 0, $u = 0, $d = 0, $s = ResponseStatus::Ok, $data = null, $e = null) 
+	{
 		$this->inserted = $i;
 		$this->updated = $u;
 		$this->deleted = $d;
@@ -29,7 +31,9 @@ class AjaxResponse {
 		$this->data = $data;
 		$this->error = $e;
 	}
-	public function send() {
+	
+	public function send() : void
+	{
 		header('Content-Type: application/json');
 		echo json_encode($this);
 	}

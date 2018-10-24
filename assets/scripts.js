@@ -61,7 +61,7 @@ function displayPagination(meta) {
 		nextPage;
 
 	// display result meta info
-	$('#search-results').prepend('<h3>Displaying ' +
+	$('#search-results').before('<h3 id="meta">Displaying ' +
 		meta.start + ' thru ' + meta.end + ' of ' +
 		meta.total + ' results</h3>');
 
@@ -140,6 +140,16 @@ function searchComments(page) {
 		data.text = text
 		data.type = searchType;
 
+		// append search text to URL
+		var newUrl = location.href.substr(0, location.href.indexOf('?'))
+			+ '?text=' + text + '&type=' + searchType;
+
+		if (page) {
+			newUrl += ('&page=' + page);
+		}
+		
+		history.pushState(data, null, newUrl);
+
 		// new search...let's clear any previous results, show loading icon
 		clearResults(true);
 		showLoadingIcon('Searching...');
@@ -151,8 +161,15 @@ function searchComments(page) {
 
 function clearResults(dontFocus) {
 	$('#search-results, #msg, #pagination').html('');
+	$('#meta').remove();
+
 	if (!dontFocus) {
 		$('#search-text').val('').focus();
+		$('input[name=search-type][value=natural]').prop('checked', true);
+
+		// append search text to URL
+		var newUrl = location.href.substr(0, location.href.indexOf('?'));
+		history.pushState(null, null, newUrl);
 	}
 }
 

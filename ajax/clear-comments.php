@@ -1,7 +1,7 @@
 <?php
-namespace Ajax;
-require 'ajax-response.php';
-require '../include/mysql-connect.php';
+
+require '../include/AjaxResponse.php';
+require '../include/get-config.php';
 
 /**
  * all we're doing here is deleting all records in our comments table
