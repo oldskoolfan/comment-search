@@ -10,50 +10,51 @@ class SearchHelper
 		$searchText = urldecode($_GET['text']);
 		$searchType = $_GET['type'];
 
+		// regular expression for searching and highlighting comment text (see foreach loop below)
 		$regex = self::getSearchRegex($searchType,
 			$searchText);
 
-		if ($searchType === 'natural') {
-			// "regular" (i.e. natural language) search query
-			$query = "
-				select comment_text,
-					match(comment_text) against(?) as score
-				from comments
-				where match(comment_text) against(?)";
-		} else {
-			// boolean mode search query (in this case we are match the entire search string
-			// by adding double quotes around it in the AGAINST clause).
-			// also notice the 'in boolean mode' in the AGAINST clause.
-			$query = "
-				select comment_text,
-					match(comment_text) against(concat('\"', ?, '\"') in boolean mode) as score
-				from comments
-				where match(comment_text) against(concat('\"', ?, '\"') in boolean mode)";
-		}
+		// VARIABLES YOU WILL BE WORKING WITH
+		$sql = '';
+		$result = (object) ['num_rows' => 0]; // initialized this way to prevent fatal errors
+		$rows = [];
 
-		$stmt = $con->prepare($query);
-		$stmt->bind_param('ss', $searchText, $searchText);
-		$success = $stmt->execute();
+		/**
+		 * 1. $searchType can be 'natural' or 'boolean'
+		 * In either case, we want the $sql variable to contain
+		 * our SELECT SQL query for displaying the results.
+		 * Column one should contain the comment text, and column two should contain the matching score.
+		 * 
+		 * NOTE: for boolean search, make sure to put double quotes around $searchText in the AGAINST clause
+		 * to match the entire string (look at the MySQL contact() function for use with escaped double quotes)
+		 * 
+		 * 2. Once you have the query as $sql, use the $con->query() method to execute it to $result.
+		 * 
+		 * 3. Lastly, after running the query and getting the mysqli_result, use the $result->fetch_all() method to set 
+		 * $rows equal to all the rows as a multidimensional array
+		 * 
+		 * NOTE: make sure to check if the query ran successfully
+		 */
 
-		if (!$success) {
-			throw new Exception($stmt->error);
-		}
+		// CODE HERE
 
-		$queryResult = $stmt->get_result();
-		$results = $queryResult->fetch_all();
-
-		foreach ($results as $key => $val) {
+		foreach ($rows as $key => $val) {
 			// this will replace any text matching our search term(s) with a span
 			// wrapped around the text, so we can highlight it with CSS
-			$results[$key][0] = preg_replace(
+			$rows[$key][0] = preg_replace(
 				$regex,
 				'<span class="highlight">${1}</span>',
 				$val[0]);
+			// this will make sure score is always numeric
+			$rows[$key][1] = (float) $val[1]; 
 		}
 
-		list($results, $meta) = self::paginateResults($results,
-			$queryResult->num_rows);
-		$response = new AjaxResponse(0, 0, 0, ResponseStatus::Ok, $results);
+		// get paginated results
+		list($rows, $meta) = self::paginateResults($rows,
+			$result->num_rows);
+
+		// populate response object
+		$response = new AjaxResponse(0, 0, 0, ResponseStatus::Ok, $rows);
 		$response->meta = $meta;
 
 		return $response;
