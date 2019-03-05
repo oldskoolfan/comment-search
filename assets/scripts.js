@@ -39,6 +39,7 @@ function searchCallback(response) {
 			data.forEach(function(row) {
 				var commentText = row[0],
 					score = row[1];
+				score = score % 1 === 0 ? score : score.toFixed(4);
 				html += '<tr><td>' + commentText + '</td><td>' + score + '</td></tr>';
 			});
 			$('#search-results').html(html);

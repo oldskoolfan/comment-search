@@ -64,7 +64,7 @@ if (isset($_GET['text']) && isset($_GET['type'])) {
 		<?php if (count($response->data) > 0):?>
 			<tr><th>Comment</th><th>Search Score</th></tr>
 			<?php foreach ($response->data as $row): ?>
-				<tr><td><?=$row[0]?></td><td><?=$row[1]?></td></tr>
+				<tr><td><?=$row[0]?></td><td><?=is_numeric($row[1]) && floor($row[1]) === $row[1] ? $row[1] : number_format($row[1], 4)?></td></tr>
 			<?php endforeach; ?>
 		<?php else: ?>
 			<p>No Results</p>

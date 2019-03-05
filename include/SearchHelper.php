@@ -10,6 +10,9 @@ class SearchHelper
 		$searchText = urldecode($_GET['text']);
 		$searchType = $_GET['type'];
 
+		$regex = self::getSearchRegex($searchType,
+			$searchText);
+
 		if ($searchType === 'natural') {
 			// "regular" (i.e. natural language) search query
 			$query = "
@@ -35,9 +38,6 @@ class SearchHelper
 		if (!$success) {
 			throw new Exception($stmt->error);
 		}
-
-		$regex = self::getSearchRegex($searchType,
-			$searchText);
 
 		$queryResult = $stmt->get_result();
 		$results = $queryResult->fetch_all();
